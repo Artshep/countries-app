@@ -6,6 +6,7 @@ const CountriesFilterForm = ({ formData, handleChange, handleSubmit }) => {
       <label>
         Country Name:
         <input
+          aria-label="Country Name:"
           type="text"
           name="name"
           value={formData.name}
@@ -16,6 +17,7 @@ const CountriesFilterForm = ({ formData, handleChange, handleSubmit }) => {
       <label>
         Sort Order (ascend or descend):
         <select
+          aria-label="Sort Order (ascend or descend):"
           name="sortOrder"
           value={formData.sortOrder}
           onChange={handleChange}
@@ -29,6 +31,7 @@ const CountriesFilterForm = ({ formData, handleChange, handleSubmit }) => {
       <label>
         Limit Number of First Records:
         <input
+          aria-label="Limit Number of First Records:"
           type="number"
           name="limit"
           value={formData.limit}
@@ -39,6 +42,7 @@ const CountriesFilterForm = ({ formData, handleChange, handleSubmit }) => {
       <label>
         Population less than (in millions):
         <input
+          aria-label="Population less than (in millions):"
           type="number"
           name="population"
           value={formData.population}

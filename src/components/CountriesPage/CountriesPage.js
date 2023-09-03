@@ -35,6 +35,14 @@ const CountriesPage = () => {
     })();
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,12 +76,11 @@ const CountriesPage = () => {
 
     setCountries(fetchedCountries);
   };
-
   return (
     <>
       <CountriesFilterForm
         formData={formData}
-        handleChange={setFormData}
+        handleChange={handleChange}
         handleSubmit={handleSubmit}
       />
       <CountriesTable countries={countries} />
