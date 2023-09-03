@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# CountriesPage Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Application Description
 
-## Available Scripts
+The CountriesPage application is a React-based frontend app designed to interactively filter and sort a list of countries. Built upon RESTful API calls to `restcountries.com`, the app allows users to refine country information based on criteria like the name, population, and sort order. A form above the table allows users to specify their preferences, which then dynamically updates the list below.
 
-In the project directory, you can run:
+The application is modular and consists of multiple components, including `CountriesFilterForm` for the filter form, and `CountriesTable` for displaying the country data. Utilizing React hooks (`useState` and `useEffect`) and employing `axios` for HTTP requests, the application is both robust and maintainable.
 
-### `npm start`
+## How to Run the Application Locally
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. **Navigate to the project folder**
+    ```bash
+    cd <project-folder>
+    ```
 
-### `npm test`
+3. **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. **Start the development server**
+    ```bash
+    npm start
+    ```
 
-### `npm run build`
+5. **Access the App**
+    Open your web browser and go to `http://localhost:3000` to view the app.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Example Usage of Developed Endpoint
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **Fetch All Countries**
+    ```javascript
+    fetchCountries();
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. **Fetch First 10 Countries**
+    ```javascript
+    fetchCountries(10);
+    ```
 
-### `npm run eject`
+3. **Filter Countries by Name ("United")**
+    ```javascript
+    fetchCountries().filter(country => country.name.common.includes("United"));
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **Filter Countries by Max Population (10 Million)**
+    ```javascript
+    fetchCountries().filter(country => country.population / 1000000 < 10);
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. **Sort Countries in Ascending Order**
+    ```javascript
+    fetchCountries().sort((a, b) => a.name.common.localeCompare(b.name.common));
+    ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+6. **Sort Countries in Descending Order**
+    ```javascript
+    fetchCountries().sort((a, b) => b.name.common.localeCompare(a.name.common));
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+7. **Fetch First 5 Countries and Sort in Ascending Order**
+    ```javascript
+    fetchCountries(5).sort((a, b) => a.name.common.localeCompare(b.name.common));
+    ```
 
-## Learn More
+8. **Fetch Countries and Filter by Name and Population**
+    ```javascript
+    fetchCountries().filter(country => country.name.common.includes("United") && country.population / 1000000 < 100);
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+9. **Fetch First 10 Countries, Filter by Name ("United") and Sort in Descending Order**
+    ```javascript
+    fetchCountries(10).filter(country => country.name.common.includes("United")).sort((a, b) => b.name.common.localeCompare(a.name.common));
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+10. **Fetch All Countries and Show Only European Countries**
+    ```javascript
+    fetchCountries().filter(country => country.region === "Europe");
+    ```
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

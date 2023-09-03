@@ -1,0 +1,277 @@
+I have a code:
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import CountriesFilterForm from "../CountriesFilterForm";
+import CountriesTable from "../CountriesTable";
+
+const CountriesPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    limit: "",
+    population: "",
+    sortOrder: "",
+  });
+
+  const [countries, setCountries] = useState([]);
+
+  const fetchCountries = async (limit = null) => {
+    try {
+      const response = await axios.get("https://restcountries.com/v3.1/all");
+      let data = response.data;
+      if (limit) {
+        data = data.slice(0, limit);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch country data:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      const initialCountries = await fetchCountries();
+      setCountries(initialCountries);
+    })();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let fetchedCountries = await fetchCountries(
+      formData.limit ? parseInt(formData.limit, 10) : null
+    );
+    if (formData.name) {
+      fetchedCountries = fetchedCountries.filter((country) =>
+        country.name.common.toLowerCase().includes(formData.name.toLowerCase())
+      );
+    }
+    if (formData.population) {
+      const maxPopulation = parseFloat(formData.population);
+      fetchedCountries = fetchedCountries.filter((country) => {
+        const populationInMillions = country.population / 1000000;
+        return populationInMillions < maxPopulation;
+      });
+    }
+    if (formData.sortOrder) {
+      fetchedCountries.sort((a, b) => {
+        const nameA = a.name.common.toLowerCase();
+        const nameB = b.name.common.toLowerCase();
+
+        if (formData.sortOrder === "ascend") {
+          return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+        } else {
+          return nameA < nameB ? 1 : nameA > nameB ? -1 : 0;
+        }
+      });
+    }
+
+    setCountries(fetchedCountries);
+  };
+  return (
+    <>
+      <CountriesFilterForm
+        formData={formData}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+      />
+      <CountriesTable countries={countries} />
+    </>
+  );
+};
+
+export default CountriesPage;
+
+
+Update Readme.md with  
+
+Application description: 2 paragraphs, 4-10 Sentences. 
+
+Information on how to run the developed application locally. 
+
+At least 10 examples of how to use the developed endpoint. 
+ChatGPT
+Readme.md
+Application Description
+The CountriesPage application is a React-based frontend app that allows users to filter and sort countries based on various criteria such as country name, population, and sort order. The app leverages the REST API from restcountries.com to fetch a list of all countries along with related information. Users can interact with a form to specify their filtering and sorting preferences, and the table below the form updates dynamically based on the input. This makes it a highly interactive tool, ideal for educational or informational purposes.
+
+The app is made up of multiple components, which include CountriesFilterForm for the filter form, and CountriesTable for displaying the countries in a tabular format. It also uses hooks (useState and useEffect) and employs axios for API calls, encapsulating all these functionalities in a clean and modular codebase.
+
+How to Run the Application Locally
+Clone the repository.
+
+bash
+Copy code
+git clone <repository-url>
+Navigate to the project folder.
+
+bash
+Copy code
+cd <project-folder>
+Install the dependencies.
+
+bash
+Copy code
+npm install
+Start the local development server.
+
+bash
+Copy code
+npm start
+Open your web browser and go to http://localhost:3000 to view the app.
+
+Example Usage of Developed Endpoint
+Fetch All Countries
+
+javascript
+Copy code
+fetchCountries();
+Fetch First 10 Countries
+
+javascript
+Copy code
+fetchCountries(10);
+Filter Countries by Name ("United")
+
+javascript
+Copy code
+fetchCountries().filter(country => country.name.common.includes("United"));
+Filter Countries by Maximum Population (10 Million)
+
+javascript
+Copy code
+fetchCountries().filter(country => country.population / 1000000 < 10);
+Sort Countries in Ascending Order
+
+javascript
+Copy code
+fetchCountries().sort((a, b) => a.name.common.localeCompare(b.name.common));
+Sort Countries in Descending Order
+
+javascript
+Copy code
+fetchCountries().sort((a, b) => b.name.common.localeCompare(a.name.common));
+Fetch First 5 Countries and Sort in Ascending Order
+
+javascript
+Copy code
+fetchCountries(5).sort((a, b) => a.name.common.localeCompare(b.name.common));
+Fetch Countries and Filter by Name and Population
+
+javascript
+Copy code
+fetchCountries().filter(country => country.name.common.includes("United") && country.population / 1000000 < 100);
+Fetch First 10 Countries, Filter by Name ("United") and Sort in Descending Order
+
+javascript
+Copy code
+fetchCountries(10).filter(country => country.name.common.includes("United")).sort((a, b) => b.name.common.localeCompare(a.name.common));
+Fetch All Countries and Show Only European Countries
+
+javascript
+Copy code
+fetchCountries().filter(country => country.region === "Europe");
+Feel free to explore the application and create complex queries using combinations of the above examples.
+
+Can you create it in Readme.md format? So I can just copy and paste
+ChatGPT
+Certainly! Below is a formatted Readme.md that you can copy and paste directly into your project's README file.
+
+markdown
+Copy code
+# CountriesPage Application
+
+## Application Description
+
+The CountriesPage application is a React-based frontend app designed to interactively filter and sort a list of countries. Built upon RESTful API calls to `restcountries.com`, the app allows users to refine country information based on criteria like the name, population, and sort order. A form above the table allows users to specify their preferences, which then dynamically updates the list below.
+
+The application is modular and consists of multiple components, including `CountriesFilterForm` for the filter form, and `CountriesTable` for displaying the country data. Utilizing React hooks (`useState` and `useEffect`) and employing `axios` for HTTP requests, the application is both robust and maintainable.
+
+## How to Run the Application Locally
+
+1. **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    ```
+
+2. **Navigate to the project folder**
+    ```bash
+    cd <project-folder>
+    ```
+
+3. **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+4. **Start the development server**
+    ```bash
+    npm start
+    ```
+
+5. **Access the App**
+    Open your web browser and go to `http://localhost:3000` to view the app.
+
+## Example Usage of Developed Endpoint
+
+1. **Fetch All Countries**
+    ```javascript
+    fetchCountries();
+    ```
+
+2. **Fetch First 10 Countries**
+    ```javascript
+    fetchCountries(10);
+    ```
+
+3. **Filter Countries by Name ("United")**
+    ```javascript
+    fetchCountries().filter(country => country.name.common.includes("United"));
+    ```
+
+4. **Filter Countries by Max Population (10 Million)**
+    ```javascript
+    fetchCountries().filter(country => country.population / 1000000 < 10);
+    ```
+
+5. **Sort Countries in Ascending Order**
+    ```javascript
+    fetchCountries().sort((a, b) => a.name.common.localeCompare(b.name.common));
+    ```
+
+6. **Sort Countries in Descending Order**
+    ```javascript
+    fetchCountries().sort((a, b) => b.name.common.localeCompare(a.name.common));
+    ```
+
+7. **Fetch First 5 Countries and Sort in Ascending Order**
+    ```javascript
+    fetchCountries(5).sort((a, b) => a.name.common.localeCompare(b.name.common));
+    ```
+
+8. **Fetch Countries and Filter by Name and Population**
+    ```javascript
+    fetchCountries().filter(country => country.name.common.includes("United") && country.population / 1000000 < 100);
+    ```
+
+9. **Fetch First 10 Countries, Filter by Name ("United") and Sort in Descending Order**
+    ```javascript
+    fetchCountries(10).filter(country => country.name.common.includes("United")).sort((a, b) => b.name.common.localeCompare(a.name.common));
+    ```
+
+10. **Fetch All Countries and Show Only European Countries**
+    ```javascript
+    fetchCountries().filter(country => country.region === "Europe");
+    ```
+
+Simply copy and paste the above markdown code into your README.md file. It includes a description, setup instructions, and example usages of your developed endpoint.
