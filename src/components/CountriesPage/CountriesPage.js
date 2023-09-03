@@ -4,9 +4,9 @@ import axios from "axios";
 const CountriesPage = () => {
   const [formData, setFormData] = useState({
     name: "",
-    region: "",
     capital: "",
     subregion: "",
+    population: "",
   });
 
   const [countries, setCountries] = useState([]);
@@ -32,9 +32,10 @@ const CountriesPage = () => {
     fetchCountries();
   }, []);
 
-  const filterByCountryName = (searchTerm) => {
+  const filterByPopulation = (maxPopulation) => {
     const filteredCountries = countries.filter((country) => {
-      return country.name.common.toLowerCase().includes(searchTerm.toLowerCase());
+      const populationInMillions = country.population / 1000000;
+      return populationInMillions < maxPopulation;
     });
     return filteredCountries;
   };
@@ -42,38 +43,29 @@ const CountriesPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Use filterByCountryName function to filter countries by name
-    const countriesByName = filterByCountryName(formData.name);
-    console.log("Countries filtered by name:", countriesByName);
+    let filteredCountries = countries;
 
-    // The rest of your existing filter logic, if you want to keep it
-    const filteredCountries = countries.filter((country) => {
-      const nameCondition = formData.name
-        ? country.name.common
-            .toLowerCase()
-            .includes(formData.name.toLowerCase())
-        : true;
-      const regionCondition = formData.region
-        ? country.region.toLowerCase().includes(formData.region.toLowerCase())
-        : true;
-      const capitalCondition = formData.capital
-        ? country.capital[0]
-            .toLowerCase()
-            .includes(formData.capital.toLowerCase())
-        : true;
-      const subregionCondition = formData.subregion
-        ? country.subregion
-            .toLowerCase()
-            .includes(formData.subregion.toLowerCase())
-        : true;
-
-      return (
-        nameCondition &&
-        regionCondition &&
-        capitalCondition &&
-        subregionCondition
+    if (formData.name) {
+      filteredCountries = filteredCountries.filter((country) =>
+        country.name.common.toLowerCase().includes(formData.name.toLowerCase())
       );
-    });
+    }
+    if (formData.capital) {
+      filteredCountries = filteredCountries.filter((country) =>
+        country.capital[0]
+          .toLowerCase()
+          .includes(formData.capital.toLowerCase())
+      );
+    }
+    if (formData.subregion) {
+      filteredCountries = filteredCountries.filter((country) =>
+        country.subregion.toLowerCase().includes(formData.subregion.toLowerCase())
+      );
+    }
+    if (formData.population) {
+      const maxPopulation = parseFloat(formData.population);
+      filteredCountries = filterByPopulation(maxPopulation);
+    }
 
     console.log("Filtered countries:", filteredCountries);
   };
@@ -86,16 +78,6 @@ const CountriesPage = () => {
           type="text"
           name="name"
           value={formData.name}
-          onChange={handleChange}
-        />
-      </label>
-      <br />
-      <label>
-        Region:
-        <input
-          type="text"
-          name="region"
-          value={formData.region}
           onChange={handleChange}
         />
       </label>
@@ -116,6 +98,16 @@ const CountriesPage = () => {
           type="text"
           name="subregion"
           value={formData.subregion}
+          onChange={handleChange}
+        />
+      </label>
+      <br />
+      <label>
+        Population less than (in millions):
+        <input
+          type="number"
+          name="population"
+          value={formData.population}
           onChange={handleChange}
         />
       </label>
