@@ -31,9 +31,22 @@ const CountriesPage = () => {
   useEffect(() => {
     fetchCountries();
   }, []);
+
+  const filterByCountryName = (searchTerm) => {
+    const filteredCountries = countries.filter((country) => {
+      return country.name.common.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    return filteredCountries;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Filter countries based on form data
+
+    // Use filterByCountryName function to filter countries by name
+    const countriesByName = filterByCountryName(formData.name);
+    console.log("Countries filtered by name:", countriesByName);
+
+    // The rest of your existing filter logic, if you want to keep it
     const filteredCountries = countries.filter((country) => {
       const nameCondition = formData.name
         ? country.name.common
