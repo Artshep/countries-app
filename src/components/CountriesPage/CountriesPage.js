@@ -4,13 +4,13 @@ import axios from "axios";
 const CountriesPage = () => {
   const [formData, setFormData] = useState({
     name: "",
-    subregion: "",
+    limit: "",
     population: "",
     sortOrder: "",
   });
 
   const [countries, setCountries] = useState([]);
-
+  console.log(countries, "countries");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -19,70 +19,64 @@ const CountriesPage = () => {
     }));
   };
 
-  const fetchCountries = async () => {
+  const fetchCountries = async (limit = null) => {
     try {
       const response = await axios.get("https://restcountries.com/v3.1/all");
-      setCountries(response.data);
+      let data = response.data;
+
+      if (limit) {
+        data = data.slice(0, limit);
+      }
+
+      return data;
     } catch (error) {
       console.error("Failed to fetch country data:", error);
+      return [];
     }
   };
 
   useEffect(() => {
-    fetchCountries();
+    (async () => {
+      const initialCountries = await fetchCountries();
+      setCountries(initialCountries);
+    })();
   }, []);
 
-  const sortCountriesByName = (countries, order) => {
-    return [...countries].sort((a, b) => {
-      const nameA = a.name.common.toLowerCase();
-      const nameB = b.name.common.toLowerCase();
-
-      if (order === "ascend") {
-        return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
-      } else if (order === "descend") {
-        return nameA < nameB ? 1 : nameA > nameB ? -1 : 0;
-      } else {
-        return 0;
-      }
-    });
-  };
-
-  const filterByPopulation = (maxPopulation) => {
-    return countries.filter((country) => {
-      const populationInMillions = country.population / 1000000;
-      return populationInMillions < maxPopulation;
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let filteredCountries = countries;
+    let fetchedCountries = await fetchCountries(
+      formData.limit ? parseInt(formData.limit, 10) : null
+    );
 
     if (formData.name) {
-      filteredCountries = filteredCountries.filter((country) =>
+      fetchedCountries = fetchedCountries.filter((country) =>
         country.name.common.toLowerCase().includes(formData.name.toLowerCase())
       );
     }
-    if (formData.subregion) {
-      filteredCountries = filteredCountries.filter((country) =>
-        country.subregion
-          .toLowerCase()
-          .includes(formData.subregion.toLowerCase())
-      );
-    }
+
     if (formData.population) {
       const maxPopulation = parseFloat(formData.population);
-      filteredCountries = filterByPopulation(maxPopulation);
-    }
-    if (formData.sortOrder) {
-      filteredCountries = sortCountriesByName(
-        filteredCountries,
-        formData.sortOrder
-      );
+      fetchedCountries = fetchedCountries.filter((country) => {
+        const populationInMillions = country.population / 1000000;
+        return populationInMillions < maxPopulation;
+      });
     }
 
-    console.log("Filtered countries:", filteredCountries);
+    if (formData.sortOrder) {
+      fetchedCountries.sort((a, b) => {
+        const nameA = a.name.common.toLowerCase();
+        const nameB = b.name.common.toLowerCase();
+
+        if (formData.sortOrder === "ascend") {
+          return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+        } else {
+          return nameA < nameB ? 1 : nameA > nameB ? -1 : 0;
+        }
+      });
+    }
+
+    setCountries(fetchedCountries);
   };
 
   return (
@@ -111,11 +105,11 @@ const CountriesPage = () => {
       </label>
       <br />
       <label>
-        Subregion:
+        Limit Number of Records:
         <input
-          type="text"
-          name="subregion"
-          value={formData.subregion}
+          type="number"
+          name="limit"
+          value={formData.limit}
           onChange={handleChange}
         />
       </label>
