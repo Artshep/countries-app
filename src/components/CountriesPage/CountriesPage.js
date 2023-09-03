@@ -4,9 +4,9 @@ import axios from "axios";
 const CountriesPage = () => {
   const [formData, setFormData] = useState({
     name: "",
-    capital: "",
     subregion: "",
     population: "",
+    sortOrder: "",
   });
 
   const [countries, setCountries] = useState([]);
@@ -32,12 +32,26 @@ const CountriesPage = () => {
     fetchCountries();
   }, []);
 
+  const sortCountriesByName = (countries, order) => {
+    return [...countries].sort((a, b) => {
+      const nameA = a.name.common.toLowerCase();
+      const nameB = b.name.common.toLowerCase();
+
+      if (order === "ascend") {
+        return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+      } else if (order === "descend") {
+        return nameA < nameB ? 1 : nameA > nameB ? -1 : 0;
+      } else {
+        return 0;
+      }
+    });
+  };
+
   const filterByPopulation = (maxPopulation) => {
-    const filteredCountries = countries.filter((country) => {
+    return countries.filter((country) => {
       const populationInMillions = country.population / 1000000;
       return populationInMillions < maxPopulation;
     });
-    return filteredCountries;
   };
 
   const handleSubmit = (e) => {
@@ -50,21 +64,22 @@ const CountriesPage = () => {
         country.name.common.toLowerCase().includes(formData.name.toLowerCase())
       );
     }
-    if (formData.capital) {
-      filteredCountries = filteredCountries.filter((country) =>
-        country.capital[0]
-          .toLowerCase()
-          .includes(formData.capital.toLowerCase())
-      );
-    }
     if (formData.subregion) {
       filteredCountries = filteredCountries.filter((country) =>
-        country.subregion.toLowerCase().includes(formData.subregion.toLowerCase())
+        country.subregion
+          .toLowerCase()
+          .includes(formData.subregion.toLowerCase())
       );
     }
     if (formData.population) {
       const maxPopulation = parseFloat(formData.population);
       filteredCountries = filterByPopulation(maxPopulation);
+    }
+    if (formData.sortOrder) {
+      filteredCountries = sortCountriesByName(
+        filteredCountries,
+        formData.sortOrder
+      );
     }
 
     console.log("Filtered countries:", filteredCountries);
@@ -83,13 +98,16 @@ const CountriesPage = () => {
       </label>
       <br />
       <label>
-        Capital:
-        <input
-          type="text"
-          name="capital"
-          value={formData.capital}
+        Sort Order (ascend or descend):
+        <select
+          name="sortOrder"
+          value={formData.sortOrder}
           onChange={handleChange}
-        />
+        >
+          <option value="">None</option>
+          <option value="ascend">Ascend</option>
+          <option value="descend">Descend</option>
+        </select>
       </label>
       <br />
       <label>
